@@ -5,11 +5,15 @@
 package it.polito.tdp.corsi;
 
 import java.net.URL;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import it.polito.tdp.corsi.model.Corso;
+import it.polito.tdp.corsi.model.Divisione;
 import it.polito.tdp.corsi.model.Model;
+import it.polito.tdp.corsi.model.Studente;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -73,17 +77,56 @@ public class FXMLController {
 
     @FXML
     void numeroStudenti(ActionEvent event) {
+    	txtRisultato.clear();
+    	String periodo = txtPeriodo.getText();
+    	int pd;
+    	try {
+    		pd = Integer.parseInt(periodo);
+    	}catch(NumberFormatException e) {
+    		txtRisultato.setText("Inserisci un periodo numerico");
+    		return;
+    	}
     	
+    	if(pd<1 || pd>2) {
+    		txtRisultato.setText("Inserisci 1 o 2");
+    		return;
+    	}
+    	
+    	Map<Corso, Integer> iscritti = this.model.getIscritti(pd);
+    	
+    	for(Corso c : iscritti.keySet()) {
+    		txtRisultato.appendText(c + " " + iscritti.get(c) + "\n");
+    	}
     }
 
     @FXML
     void stampaDivisione(ActionEvent event) {
-
+    	txtRisultato.clear();
+    	
+    	String codins = txtCorso.getText();
+    	if(codins == null || codins.equals("")) {
+    		txtRisultato.appendText("Inserirre codice corso");
+    		return;
+    	}
+    	List<Divisione> ris = this.model.getDivisioneStudenti(codins);
+    	Collections.sort(ris);
+    	
+    	for(Divisione d : this.model.getDivisioneStudenti(codins))
+    		txtRisultato.appendText(d.getCDS() + "\t" + d.getN() + "\n");
     }
 
     @FXML
     void stampaStudenti(ActionEvent event) {
-
+    	txtRisultato.clear();
+    	
+    	String codins = txtCorso.getText();
+    	if(codins == null || codins.equals("")) {
+    		txtRisultato.appendText("Inserirre codice corso");
+    		return;
+    	}
+    	
+    	for(Studente s : this.model.getStudenteByCorso(codins))
+    		txtRisultato.appendText(s + "\n");
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
